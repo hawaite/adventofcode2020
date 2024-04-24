@@ -1,17 +1,11 @@
-package main
+package day9
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/hawaite/aoc2020/util"
+)
 
 func validate(num_buffer []int64, num int64) bool {
 	// validate if there are two numbers in the num_buffer slice which sum to "num"
@@ -64,19 +58,17 @@ func slice_min_max(num_buffer []int64) (min int64, max int64) {
 	return min, max
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
+func Run(lines []string) (string, string) {
+	var part1_res int64
+	var part2_res int64
 
-	scanner := bufio.NewScanner(f)
-	buffer_size := 25
+	buffer_size := 25 // set buffer size to 5 when running example file
 	num_buffer := []int64{}
 	found_weakness := int64(0)
 
-	for scanner.Scan() {
-		num, err := strconv.ParseInt(scanner.Text(), 10, 64)
-		check(err)
-		// fmt.Println("Current number:", num)
+	for _, line := range lines {
+		num, err := strconv.ParseInt(line, 10, 64)
+		util.ErrCheck(err)
 		if len(num_buffer) < buffer_size {
 			// still in preamble
 			num_buffer = append(num_buffer, num)
@@ -84,7 +76,8 @@ func main() {
 			// no longer in pre-amble
 			// check if we find a sum in the num_buffer.
 			result := validate(num_buffer, num)
-			if result == false {
+			if !result {
+				part1_res = num
 				fmt.Println("Part 1: Nothing in", num_buffer, "add up to", num)
 				found_weakness = num
 				break
@@ -95,12 +88,10 @@ func main() {
 		}
 	}
 
-	f.Seek(0, 0)
-	scanner = bufio.NewScanner(f)
 	num_buffer = []int64{} // reset the num buffer
-	for scanner.Scan() {
-		num, err := strconv.ParseInt(scanner.Text(), 10, 64)
-		check(err)
+	for _, line := range lines {
+		num, err := strconv.ParseInt(line, 10, 64)
+		util.ErrCheck(err)
 		if len(num_buffer) < buffer_size {
 			// still in preamble
 			num_buffer = append(num_buffer, num)
@@ -111,7 +102,8 @@ func main() {
 			if valid {
 				fmt.Println("Part 2: Found consecutive run", valid_run, "which adds to the weakness of", num)
 				min, max := slice_min_max(valid_run)
-				fmt.Println("Min:", min, "Max:", max, "Result:", min+max)
+				part2_res = min + max
+				fmt.Println("Min:", min, "Max:", max, "Result:", part2_res)
 				break
 			}
 
@@ -119,4 +111,6 @@ func main() {
 			num_buffer = append(num_buffer[1:], num)
 		}
 	}
+
+	return fmt.Sprintf("%d", part1_res), fmt.Sprintf("%d", part2_res)
 }

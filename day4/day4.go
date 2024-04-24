@@ -1,20 +1,13 @@
-package main
+package day4
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/hawaite/aoc2020/util"
+)
 
 type PassportValidations struct {
 	byr_valid bool
@@ -81,7 +74,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := range_validation(val, 1920, 2002)
-			check(err)
+			util.ErrCheck(err)
 			validations.byr_valid = is_valid
 		case "iyr":
 			if part1 {
@@ -89,7 +82,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := range_validation(val, 2010, 2020)
-			check(err)
+			util.ErrCheck(err)
 			validations.iyr_valid = is_valid
 		case "eyr":
 			if part1 {
@@ -97,7 +90,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := range_validation(val, 2020, 2030)
-			check(err)
+			util.ErrCheck(err)
 			validations.eyr_valid = is_valid
 		case "hgt":
 			if part1 {
@@ -105,7 +98,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := height_validation(val)
-			check(err)
+			util.ErrCheck(err)
 			validations.hgt_valid = is_valid
 		case "hcl":
 			if part1 {
@@ -113,7 +106,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := regex_validation(val, "^#[0-9a-f]{6}$")
-			check(err)
+			util.ErrCheck(err)
 			validations.hcl_valid = is_valid
 		case "ecl":
 			if part1 {
@@ -128,7 +121,7 @@ func validate_passport(passport string, part1 bool) bool {
 				continue
 			}
 			is_valid, err := regex_validation(val, "^[0-9]{9}$")
-			check(err)
+			util.ErrCheck(err)
 			validations.pid_valid = is_valid
 		case "cid":
 			validations.cid_valid = true
@@ -148,19 +141,13 @@ func validate_passport(passport string, part1 bool) bool {
 	return false
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
+func Run(lines []string) (string, string) {
 	valid_passport_count_part1 := 0
 	valid_passport_count_part2 := 0
 	passport_line_buffer := []string{}
 
-	for scanner.Scan() {
-		current_line := strings.TrimSuffix(scanner.Text(), "\n")
-
-		if current_line == "" {
+	for _, line := range lines {
+		if line == "" {
 			if validate_passport(strings.Join(passport_line_buffer, " "), true) {
 				valid_passport_count_part1++
 			}
@@ -171,7 +158,7 @@ func main() {
 			// reset the line buffer.
 			passport_line_buffer = []string{}
 		} else {
-			passport_line_buffer = append(passport_line_buffer, current_line)
+			passport_line_buffer = append(passport_line_buffer, line)
 		}
 	}
 
@@ -186,6 +173,5 @@ func main() {
 		}
 	}
 
-	fmt.Println("Valid passport count for part 1:", valid_passport_count_part1)
-	fmt.Println("Valid passport count for part 2:", valid_passport_count_part2)
+	return util.IntPairToStringPair(valid_passport_count_part1, valid_passport_count_part2)
 }

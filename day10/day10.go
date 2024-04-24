@@ -1,30 +1,21 @@
-package main
+package day10
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"slices"
 	"strconv"
+
+	"github.com/hawaite/aoc2020/util"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
+func Run(lines []string) (string, string) {
+	var part1_res int
+	// var part2_res int
 
 	nums := []int{}
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range lines {
 		num, err := strconv.Atoi(line)
-		check(err)
+		util.ErrCheck(err)
 		nums = append(nums, num)
 	}
 
@@ -54,5 +45,8 @@ func main() {
 		gap_count_map[gap] += 1
 	}
 
-	fmt.Println("Part 1 answer:", gap_count_map[1]*gap_count_map[3])
+	part1_res = gap_count_map[1] * gap_count_map[3]
+	fmt.Println("Part 1 answer:", part1_res)
+
+	return util.IntPairToStringPair(part1_res, 0)
 }

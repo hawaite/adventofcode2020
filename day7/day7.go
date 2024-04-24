@@ -1,19 +1,13 @@
-package main
+package day7
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/hawaite/aoc2020/util"
+)
 
 type link struct {
 	dest  string
@@ -42,20 +36,17 @@ func sum_bags(node graph_node, graph map[string]graph_node) int {
 	}
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
+func Run(lines []string) (string, string) {
+	var part1_res int
+	var part2_res int
 	line_regex, err := regexp.Compile(`^(?P<root_id>[a-z]+ [a-z]+) bags contain(?P<target_ids>(?: [0-9] [a-z]+ [a-z]+ bag[s]?[\.,])+|(?: no other bags\.))$`)
-	check(err)
+	util.ErrCheck(err)
 	target_id_regex, err := regexp.Compile(`((?P<colour_count>[0-9]) (?P<colour_id>[a-z]+ [a-z]+) bag[s]?)+`)
-	check(err)
+	util.ErrCheck(err)
 
 	graph_node_map := map[string]graph_node{}
 
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range lines {
 		matches := line_regex.FindStringSubmatch(line)
 
 		root_id := strings.Replace(matches[line_regex.SubexpIndex("root_id")], " ", "_", 1)
@@ -66,7 +57,7 @@ func main() {
 			for i := 0; i < len(matches); i++ {
 				target_colour_id := strings.Replace(matches[i][target_id_regex.SubexpIndex("colour_id")], " ", "_", 1)
 				target_colour_count, err := strconv.Atoi(matches[i][target_id_regex.SubexpIndex("colour_count")])
-				check(err)
+				util.ErrCheck(err)
 
 				// build root -> (outgoing) -> target
 				node, exists := graph_node_map[root_id]
@@ -111,9 +102,12 @@ func main() {
 	}
 
 	// part 1 answer. exclude shiny_gold from the count
-	fmt.Println("Total bags that can possibly contain a shiny gold:", len(visited_nodes)-1)
+	part1_res = len(visited_nodes) - 1
+	fmt.Println("Total bags that can possibly contain a shiny gold:", part1_res)
 
 	// part 2 answer. start at shiny_gold and recursively iterate over all of a nodes outgoings.
-	result := sum_bags(graph_node_map["shiny_gold"], graph_node_map)
-	fmt.Println("Total bags contained within a shiny gold bag:", result)
+	part2_res = sum_bags(graph_node_map["shiny_gold"], graph_node_map)
+	fmt.Println("Total bags contained within a shiny gold bag:", part2_res)
+
+	return util.IntPairToStringPair(part1_res, part2_res)
 }

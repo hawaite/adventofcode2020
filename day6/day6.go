@@ -1,17 +1,10 @@
-package main
+package day6
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/hawaite/aoc2020/util"
+)
 
 func build_answered_question_count_map(answered_questions []string) map[rune]int {
 	answer_map := map[rune]int{}
@@ -53,17 +46,12 @@ func build_answered_questions_intersection(answered_questions []string) string {
 	return output_str
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
+func Run(lines []string) (string, string) {
 
 	line_group_buffer := []string{}
 	total_part1 := 0
 	total_part2 := 0
-	for scanner.Scan() {
-		line := strings.TrimSuffix(scanner.Text(), "\n")
+	for _, line := range lines {
 		if line == "" {
 			// processing
 			answered_question_set := build_answered_questions_set(line_group_buffer)
@@ -86,4 +74,6 @@ func main() {
 
 	fmt.Println("(part 1) Total :", total_part1)
 	fmt.Println("(part 2) Total :", total_part2)
+
+	return util.IntPairToStringPair(total_part1, total_part2)
 }

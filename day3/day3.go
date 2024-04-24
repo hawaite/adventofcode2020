@@ -1,17 +1,8 @@
-package main
+package day3
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
+	"github.com/hawaite/aoc2020/util"
 )
-
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
 
 func traverse_grid(grid []string, right_moves int, down_moves int) int {
 	hit_trees := 0
@@ -28,20 +19,8 @@ func traverse_grid(grid []string, right_moves int, down_moves int) int {
 	return hit_trees
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
-	board := []string{}
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		board = append(board, strings.TrimSuffix(line, "\n"))
-	}
-
-	fmt.Println("Part 1 tree count:", traverse_grid(board, 3, 1))
-	fmt.Println(
-		"Part 2 tree count:",
-		traverse_grid(board, 1, 1)*traverse_grid(board, 3, 1)*traverse_grid(board, 5, 1)*traverse_grid(board, 7, 1)*traverse_grid(board, 1, 2))
+func Run(lines []string) (string, string) {
+	return util.IntPairToStringPair(
+		traverse_grid(lines, 3, 1),
+		traverse_grid(lines, 1, 1)*traverse_grid(lines, 3, 1)*traverse_grid(lines, 5, 1)*traverse_grid(lines, 7, 1)*traverse_grid(lines, 1, 2))
 }

@@ -1,15 +1,14 @@
 package day1
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/hawaite/aoc2020/util"
 )
 
 func Run(lines []string) (string, string) {
-	var part1_res string
-	var part2_res string
+	var part1_res int
+	var part2_res int
 
 	// Part 1
 	for i := 0; i < len(lines); i++ {
@@ -20,9 +19,7 @@ func Run(lines []string) (string, string) {
 			util.ErrCheck(err)
 
 			if (num_i + num_j) == 2020 {
-				fmt.Println("Found values: ", num_i, "and", num_j)
-				fmt.Println("Result: ", num_i*num_j)
-				part1_res = fmt.Sprintf("%d", num_i*num_j)
+				part1_res = num_i * num_j
 			}
 		}
 	}
@@ -39,13 +36,11 @@ func Run(lines []string) (string, string) {
 				util.ErrCheck(err)
 
 				if (num_i + num_j + num_k) == 2020 {
-					fmt.Println("Found values: ", num_i, "and", num_j, "and", num_k)
-					fmt.Println("Result: ", num_i*num_j*num_k)
-					part2_res = fmt.Sprintf("%d", num_i*num_j*num_k)
+					part2_res = num_i * num_j * num_k
 				}
 			}
 		}
 	}
 
-	return part1_res, part2_res
+	return util.IntPairToStringPair(part1_res, part2_res)
 }

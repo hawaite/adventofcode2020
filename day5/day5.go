@@ -1,17 +1,11 @@
-package main
+package day5
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
-	"os"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/hawaite/aoc2020/util"
+)
 
 // take a string and interprets it as binary, using whatever character is passed as representing '1'
 func binary_string_to_int(row string, char_representing_one string) int {
@@ -38,12 +32,12 @@ func get_missing_col(found_cols []string) (string, error) {
 				found = true
 			}
 		}
-		if found == false {
+		if !found {
 			return col, nil
 		}
 	}
 
-	return "", errors.New("Lists were the same")
+	return "", errors.New("lists were the same")
 }
 
 func ticket_to_seatid(ticket string) int {
@@ -54,17 +48,16 @@ func ticket_to_seatid(ticket string) int {
 	return (row_num * 8) + col_num
 }
 
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
+func Run(lines []string) (string, string) {
+	var part1_res int
+	var part2_res int
 
-	scanner := bufio.NewScanner(f)
 	max_seen_ticket := 0
 	row_map := map[string][]string{}
 	seatid_list := []int{}
 
-	for scanner.Scan() {
-		ticket := scanner.Text()
+	for _, line := range lines {
+		ticket := line
 		row_segment := ticket[0:7]
 		col_segment := ticket[7:10]
 		seat_id := ticket_to_seatid(ticket)
@@ -82,6 +75,7 @@ func main() {
 		}
 	}
 
+	part1_res = max_seen_ticket
 	fmt.Println("(Part 1 answer) Max SID:", max_seen_ticket)
 
 	found_empty_seats := []string{}
@@ -90,7 +84,7 @@ func main() {
 		// work out what col is missing
 		if len(value) == 7 {
 			missing_col, err := get_missing_col(value)
-			check(err)
+			util.ErrCheck(err)
 			found_empty_seats = append(found_empty_seats, key+missing_col)
 		}
 	}
@@ -115,7 +109,10 @@ func main() {
 		}
 
 		if found_lower && found_higher {
+			part2_res = ticket_to_seatid(seat)
 			fmt.Println("(part 2 answer) Found valid empty Seat:", seat, "with seatid", ticket_to_seatid(seat))
 		}
 	}
+
+	return util.IntPairToStringPair(part1_res, part2_res)
 }

@@ -1,38 +1,26 @@
-package main
+package day2
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"strconv"
 	"strings"
+
+	"github.com/hawaite/aoc2020/util"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
-
+func Run(lines []string) (string, string) {
 	part_one_valid_count := 0
 	part_two_valid_count := 0
-	for scanner.Scan() {
-		line := scanner.Text()
+
+	for _, line := range lines {
 		line_parts := strings.Split(line, " ")
 		range_part := line_parts[0]
 		letter_part := line_parts[1][0]
 		password_part := line_parts[2]
 		range_parts := strings.Split(range_part, "-")
 		range_start, err := strconv.Atoi(range_parts[0])
-		check(err)
+		util.ErrCheck(err)
 		range_end, err := strconv.Atoi(range_parts[1])
-		check(err)
+		util.ErrCheck(err)
 
 		letter_count := 0
 		for i := 0; i < len(password_part); i++ {
@@ -51,6 +39,5 @@ func main() {
 		}
 	}
 
-	fmt.Println("Total valid passwords for part one: ", part_one_valid_count)
-	fmt.Println("Total valid passwords for part two: ", part_two_valid_count)
+	return util.IntPairToStringPair(part_one_valid_count, part_two_valid_count)
 }

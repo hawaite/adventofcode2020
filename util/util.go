@@ -26,6 +26,10 @@ func GetLines(path string) []string {
 	return lines
 }
 
+func IntPairToStringPair(int_one int, int_two int) (string, string) {
+	return fmt.Sprintf("%d", int_one), fmt.Sprintf("%d", int_two)
+}
+
 func GetLinesForDay(day int, useExample bool) []string {
 	filename := "input.txt"
 	if useExample {
