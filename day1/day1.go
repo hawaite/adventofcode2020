@@ -1,52 +1,51 @@
-package main
+package day1
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strconv"
+
+	"github.com/hawaite/aoc2020/util"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
-func main() {
-	f, err := os.Open("./input/input.txt")
-	check(err)
-
-	scanner := bufio.NewScanner(f)
-	num_arr := []int{}
-	num_arr_size := 0
-	for scanner.Scan() {
-		token := scanner.Text()
-		num, err := strconv.Atoi(token)
-		check(err)
-		num_arr = append(num_arr, num)
-		num_arr_size++
-	}
+func Run(lines []string) (string, string) {
+	var part1_res string
+	var part2_res string
 
 	// Part 1
-	for i := 0; i < num_arr_size; i++ {
-		for j := (i + 1); j < num_arr_size; j++ {
-			if (num_arr[i] + num_arr[j]) == 2020 {
-				fmt.Println("Found values: ", num_arr[i], "and", num_arr[j])
-				fmt.Println("Result: ", num_arr[i]*num_arr[j])
+	for i := 0; i < len(lines); i++ {
+		for j := (i + 1); j < len(lines); j++ {
+			num_i, err := strconv.Atoi(lines[i])
+			util.ErrCheck(err)
+			num_j, err := strconv.Atoi(lines[j])
+			util.ErrCheck(err)
+
+			if (num_i + num_j) == 2020 {
+				fmt.Println("Found values: ", num_i, "and", num_j)
+				fmt.Println("Result: ", num_i*num_j)
+				part1_res = fmt.Sprintf("%d", num_i*num_j)
 			}
 		}
 	}
 
 	// Part 2
-	for i := 0; i < num_arr_size; i++ {
-		for j := (i + 1); j < num_arr_size; j++ {
-			for k := (j + 1); k < num_arr_size; k++ {
-				if (num_arr[i] + num_arr[j] + num_arr[k]) == 2020 {
-					fmt.Println("Found values: ", num_arr[i], "and", num_arr[j], "and", num_arr[k])
-					fmt.Println("Result: ", num_arr[i]*num_arr[j]*num_arr[k])
+	for i := 0; i < len(lines); i++ {
+		for j := (i + 1); j < len(lines); j++ {
+			for k := (j + 1); k < len(lines); k++ {
+				num_i, err := strconv.Atoi(lines[i])
+				util.ErrCheck(err)
+				num_j, err := strconv.Atoi(lines[j])
+				util.ErrCheck(err)
+				num_k, err := strconv.Atoi(lines[k])
+				util.ErrCheck(err)
+
+				if (num_i + num_j + num_k) == 2020 {
+					fmt.Println("Found values: ", num_i, "and", num_j, "and", num_k)
+					fmt.Println("Result: ", num_i*num_j*num_k)
+					part2_res = fmt.Sprintf("%d", num_i*num_j*num_k)
 				}
 			}
 		}
 	}
+
+	return part1_res, part2_res
 }
