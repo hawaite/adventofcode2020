@@ -48,5 +48,6 @@ func Run(lines []string) (string, string) {
 	part1_res = gap_count_map[1] * gap_count_map[3]
 	fmt.Println("Part 1 answer:", part1_res)
 
-	return util.IntPairToStringPair(part1_res, 0)
+	panic("Part 2 not implemented")
+	// return util.IntPairToStringPair(part1_res, 0)
 }
