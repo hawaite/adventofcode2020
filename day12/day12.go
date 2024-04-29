@@ -61,40 +61,6 @@ func performPartOneMove(ship *pointWithDirection, instruction string, magnitude 
 	}
 }
 
-func rotate_waypoint_ccw(waypoint *point, degrees int) {
-	original_waypoint_x := waypoint.x
-	original_waypoint_y := waypoint.y
-	if degrees == 90 {
-		waypoint.x = original_waypoint_y * -1
-		waypoint.y = original_waypoint_x
-	} else if degrees == 180 {
-		waypoint.x = original_waypoint_x * -1
-		waypoint.y = original_waypoint_y * -1
-	} else if degrees == 270 {
-		waypoint.x = original_waypoint_y
-		waypoint.y = original_waypoint_x * -1
-	} else {
-		panic("Rotation degrees not 90, 180, or 270")
-	}
-}
-
-func rotate_waypoint_cw(waypoint *point, degrees int) {
-	original_waypoint_x := waypoint.x
-	original_waypoint_y := waypoint.y
-	if degrees == 270 {
-		waypoint.x = original_waypoint_y * -1
-		waypoint.y = original_waypoint_x
-	} else if degrees == 180 {
-		waypoint.x = original_waypoint_x * -1
-		waypoint.y = original_waypoint_y * -1
-	} else if degrees == 90 {
-		waypoint.x = original_waypoint_y
-		waypoint.y = original_waypoint_x * -1
-	} else {
-		panic("Rotation degrees not 90, 180, or 270")
-	}
-}
-
 func performPartTwoMove(ship *pointWithDirection, waypoint *point, instruction string, magnitude int) {
 	if !strings.Contains("FLRNSEW", instruction) {
 		panic("Unexpected instruction: " + instruction)
@@ -123,41 +89,32 @@ func performPartTwoMove(ship *pointWithDirection, waypoint *point, instruction s
 func Run(lines []string) (string, string) {
 	var part1_res string
 	var part2_res string
-	var ship pointWithDirection
-	ship.coord.x = 0
-	ship.coord.y = 0
-	ship.dir = east
+
+	var partOneShip pointWithDirection
+	partOneShip.coord.x = 0
+	partOneShip.coord.y = 0
+	partOneShip.dir = east
+
+	var partTwoShip pointWithDirection
+	partTwoShip.coord.x = 0
+	partTwoShip.coord.y = 0
+	partTwoShip.dir = east
+
+	var partTwoWaypoint point
+	partTwoWaypoint.x = 10
+	partTwoWaypoint.y = 1
 
 	for _, line := range lines {
 		instruction := string(line[0])
 		magnitude, err := strconv.Atoi(line[1:])
 		util.ErrCheck(err)
 
-		performPartOneMove(&ship, instruction, magnitude)
+		performPartOneMove(&partOneShip, instruction, magnitude)
+		performPartTwoMove(&partTwoShip, &partTwoWaypoint, instruction, magnitude)
 	}
 
-	manhattan_distance := intAbs(ship.coord.x) + intAbs(ship.coord.y)
-	part1_res = fmt.Sprintf("%d", manhattan_distance)
-
-	// PART 2
-	// waypoint values are relative to the ship, not absolute values
-	var waypoint point
-	waypoint.x = 10
-	waypoint.y = 1
-	ship.coord.x = 0
-	ship.coord.y = 0
-	ship.dir = east
-
-	for _, line := range lines {
-		instruction := string(line[0])
-		magnitude, err := strconv.Atoi(line[1:])
-		util.ErrCheck(err)
-
-		performPartTwoMove(&ship, &waypoint, instruction, magnitude)
-	}
-
-	manhattan_distance = intAbs(ship.coord.x) + intAbs(ship.coord.y)
-	part2_res = fmt.Sprintf("%d", manhattan_distance)
+	part1_res = fmt.Sprintf("%d", intAbs(partOneShip.coord.x)+intAbs(partOneShip.coord.y))
+	part2_res = fmt.Sprintf("%d", intAbs(partTwoShip.coord.x)+intAbs(partTwoShip.coord.y))
 
 	return part1_res, part2_res
 }
