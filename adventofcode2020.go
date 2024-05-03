@@ -11,7 +11,7 @@ import (
 	"github.com/hawaite/aoc2020/day12"
 
 	// "github.com/hawaite/aoc2020/day13"
-	// "github.com/hawaite/aoc2020/day14"
+	"github.com/hawaite/aoc2020/day14"
 	// "github.com/hawaite/aoc2020/day15"
 	// "github.com/hawaite/aoc2020/day16"
 	// "github.com/hawaite/aoc2020/day17"
@@ -61,7 +61,7 @@ func main() {
 		11: day11.Run,
 		12: day12.Run,
 		// 13: day13.Run,
-		// 14: day14.Run,
+		14: day14.Run,
 		// 15: day15.Run,
 		// 16: day16.Run,
 		// 17: day17.Run,
