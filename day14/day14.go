@@ -58,9 +58,7 @@ func getExpandedLocationBitStreamList(memory_location_bit_string string) []strin
 	return generated_addresses
 }
 
-func Run(lines []string) (string, string) {
-	var part1_res string
-	var part2_res string
+func Run(lines []string) (part1_res string, part2_res string) {
 
 	mask_regex, err := regexp.Compile(mask_rx)
 	util.ErrCheck(err)
