@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/hawaite/aoc2020/day1"
 	"github.com/hawaite/aoc2020/day10"
@@ -35,17 +36,42 @@ import (
 	"github.com/hawaite/aoc2020/util"
 )
 
-func main() {
-	day_flag := flag.Int("day", 0, "the day to execute [REQUIRED]")
-	input_option_flag := flag.Bool("example", false, "indicates should the example input be used or the full input")
-	flag.Parse()
+const new_file_template = `package day%d
 
-	if *day_flag == 0 {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
+func Run(lines []string) (part1_res string, part2_res string) {
+	return part1_res, part2_res
+}
+`
 
-	fmt.Println("Running Day", *day_flag)
+func initNewDay(day_num int) {
+	fmt.Println("Initializing day", day_num)
+	fmt.Println("=====================")
+
+	dir_path := path.Join(".", fmt.Sprintf("day%d", day_num))
+	input_path := path.Join(dir_path, "input")
+
+	fmt.Println("Building directory", input_path)
+	err := os.MkdirAll(input_path, os.ModeDir|0755)
+	util.ErrCheck(err) // will fail if already exists
+
+	fmt.Println(path.Join(input_path, "input.txt"))
+	err = os.WriteFile(path.Join(input_path, "input.txt"), []byte{}, 0644)
+	util.ErrCheck(err)
+
+	fmt.Println(path.Join(input_path, "example.txt"))
+	err = os.WriteFile(path.Join(input_path, "example.txt"), []byte{}, 0644)
+	util.ErrCheck(err)
+
+	fmt.Println(path.Join(dir_path, fmt.Sprintf("day%d.go", day_num)))
+	err = os.WriteFile(
+		path.Join(dir_path, fmt.Sprintf("day%d.go", day_num)),
+		[]byte(fmt.Sprintf(new_file_template, day_num)),
+		0644)
+	util.ErrCheck(err)
+}
+
+func execDay(day_num int, useExampleInput bool) {
+	fmt.Println("Running Day", day_num)
 	fmt.Println("=====================")
 
 	day_run_func_map := map[int]func([]string) (string, string){
@@ -79,13 +105,46 @@ func main() {
 	var part1_result string
 	var part2_result string
 
-	run_func, exists := day_run_func_map[*day_flag]
+	run_func, exists := day_run_func_map[day_num]
 	if exists {
-		part1_result, part2_result = run_func(util.GetLinesForDay(*day_flag, *input_option_flag))
+		part1_result, part2_result = run_func(util.GetLinesForDay(day_num, useExampleInput))
 	} else {
 		panic("Not implemented")
 	}
 
 	fmt.Println("=====================")
 	fmt.Printf("Part 1 result: %s\nPart 2 result: %s\n", part1_result, part2_result)
+}
+
+func main() {
+	day_flag := flag.Int("day", 0, "the day to execute [REQUIRED]")
+	run_flag := flag.Bool("run", false, "Execute the given day. Cannot be used with -init")
+	init_flag := flag.Bool("init", false, "Initialise the given day. Cannot be used with -run")
+	use_example_input_flag := flag.Bool("example", false, "indicates should the example input be used or the full input")
+	flag.Parse()
+
+	// day alway required
+	if *day_flag == 0 {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	// cannot have both init and run flags set
+	if *run_flag && *init_flag {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	// cannot have neither init and run flags set
+	if !*run_flag && !*init_flag {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	if *run_flag {
+		execDay(*day_flag, *use_example_input_flag)
+	} else if *init_flag {
+		initNewDay(*day_flag)
+	}
+
 }
