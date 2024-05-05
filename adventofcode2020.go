@@ -15,7 +15,7 @@ import (
 	"github.com/hawaite/aoc2020/day14"
 	"github.com/hawaite/aoc2020/day15"
 
-	// "github.com/hawaite/aoc2020/day16"
+	"github.com/hawaite/aoc2020/day16"
 	// "github.com/hawaite/aoc2020/day17"
 	// "github.com/hawaite/aoc2020/day18"
 	// "github.com/hawaite/aoc2020/day19"
@@ -55,11 +55,11 @@ func initNewDay(day_num int) {
 	util.ErrCheck(err) // will fail if already exists
 
 	fmt.Println(path.Join(input_path, "input.txt"))
-	err = os.WriteFile(path.Join(input_path, "input.txt"), []byte{}, 0644)
+	_, err = os.Create(path.Join(input_path, "input.txt"))
 	util.ErrCheck(err)
 
 	fmt.Println(path.Join(input_path, "example.txt"))
-	err = os.WriteFile(path.Join(input_path, "example.txt"), []byte{}, 0644)
+	_, err = os.Create(path.Join(input_path, "example.txt"))
 	util.ErrCheck(err)
 
 	fmt.Println(path.Join(dir_path, fmt.Sprintf("day%d.go", day_num)))
@@ -90,7 +90,7 @@ func execDay(day_num int, useExampleInput bool) {
 		// 13: day13.Run,
 		14: day14.Run,
 		15: day15.Run,
-		// 16: day16.Run,
+		16: day16.Run,
 		// 17: day17.Run,
 		// 18: day18.Run,
 		// 19: day19.Run,
