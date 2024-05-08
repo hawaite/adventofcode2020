@@ -17,7 +17,7 @@ import (
 	"github.com/hawaite/aoc2020/day16"
 	"github.com/hawaite/aoc2020/day17"
 
-	// "github.com/hawaite/aoc2020/day18"
+	"github.com/hawaite/aoc2020/day18"
 	// "github.com/hawaite/aoc2020/day19"
 	"github.com/hawaite/aoc2020/day2"
 	// "github.com/hawaite/aoc2020/day20"
@@ -92,7 +92,7 @@ func execDay(day_num int, useExampleInput bool) {
 		15: day15.Run,
 		16: day16.Run,
 		17: day17.Run,
-		// 18: day18.Run,
+		18: day18.Run,
 		// 19: day19.Run,
 		// 20: day20.Run,
 		// 21: day21.Run,
