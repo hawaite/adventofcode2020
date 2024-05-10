@@ -17,77 +17,87 @@ type token struct {
 	val        int
 }
 
-func do_simple_math(token_stream []token) int {
-	total := token_stream[0].val
-	current_op := token_stream[1].token_type
-
-	for ix, current_token := range token_stream[2:] {
-		if ix%2 == 0 {
-			// digit
-			if current_op == addition_op {
-				total += current_token.val
-			} else if current_op == multiplication_op {
-				total *= current_token.val
-			} else {
-				panic(fmt.Sprintf("Expected a number but got %v", current_token))
-			}
-		} else {
-			// oper
-			current_op = current_token.token_type
-		}
-	}
-
-	return total
+func operator_one_has_higher_or_equal_precedence_part_two(operatorOne token, operatorTwo token) bool {
+	// only scenario with tokens we have
+	return (operatorOne.token_type == addition_op && operatorTwo.token_type == multiplication_op) || (operatorOne.token_type == operatorTwo.token_type)
 }
 
-// performs one parentheses simplification and returns new token stream
-func perform_single_simplification(token_stream []token) []token {
-	opening_paren_ix := 0
-	closing_paren_ix := 0
-	found_simple_expression := false
-	for i := 0; i < len(token_stream); i++ {
-		if token_stream[i].token_type == opening_paren {
-			for j := i + 1; j < len(token_stream); j++ {
-				if token_stream[j].token_type == opening_paren {
-					break // wasnt a simple parentheses expression
-				} else if token_stream[j].token_type == closing_paren {
-					// was a simple expression.
-					opening_paren_ix = i
-					closing_paren_ix = j
-					found_simple_expression = true
+func operator_one_has_higher_or_equal_precedence_part_one(operatorOne token, operatorTwo token) bool {
+	// return true except when the first token is an opening paren
+	return operatorOne.token_type != opening_paren
+}
+
+// takes a list of tokens and organises them in to RPN
+func shunting_algo(token_stream []token, precedence_func func(token, token) bool) []token {
+	output_queue := []token{}
+	operator_stack := []token{}
+
+	for _, current_token := range token_stream {
+		if current_token.token_type == number {
+			output_queue = append(output_queue, current_token)
+		} else if current_token.token_type == addition_op || current_token.token_type == multiplication_op {
+			// pop operators from the stack while the one on the top has higher precedence or we hit an opening paren
+			for len(operator_stack) > 0 && precedence_func(operator_stack[len(operator_stack)-1], current_token) {
+				most_recent_operator := operator_stack[len(operator_stack)-1]
+				operator_stack = operator_stack[:len(operator_stack)-1]
+				// and push them to output queue
+				output_queue = append(output_queue, most_recent_operator)
+			}
+
+			// then add current token to the operator stack
+			operator_stack = append(operator_stack, current_token)
+
+		} else if current_token.token_type == opening_paren {
+			operator_stack = append(operator_stack, current_token)
+		} else if current_token.token_type == closing_paren {
+			// pop operators until we hit an opening paren
+			// discard that paren
+			for len(operator_stack) != 0 {
+				most_recent_operator := operator_stack[len(operator_stack)-1]
+				operator_stack = operator_stack[:len(operator_stack)-1]
+				if most_recent_operator.token_type == opening_paren {
 					break
+				} else {
+					output_queue = append(output_queue, most_recent_operator)
 				}
 			}
-			if found_simple_expression {
-				break // break from outer loop if we already found a simple expression
-			}
 		}
 	}
 
-	// since we have now identified a simple expression with no nested parentheses
-	// evaluate the contents of the expression, then replace the expression with a number token
-	math_result := do_simple_math(token_stream[opening_paren_ix+1 : closing_paren_ix])
-	new_token_stream := []token{}
-	new_token_stream = append(new_token_stream, token_stream[0:opening_paren_ix]...)
-	new_token_stream = append(new_token_stream, token{token_type: number, val: math_result})
-	new_token_stream = append(new_token_stream, token_stream[closing_paren_ix+1:]...)
-	return new_token_stream
+	// flush all remaining operators to the output
+	for len(operator_stack) > 0 {
+		op := operator_stack[len(operator_stack)-1]
+		operator_stack = operator_stack[:len(operator_stack)-1]
+		output_queue = append(output_queue, op)
+	}
+
+	return output_queue
 }
 
-func token_stream_contains_parentheses(token_stream []token) bool {
+func do_rpn_math(token_stream []token) int {
+	the_stack := []int{}
 	for _, t := range token_stream {
-		if t.token_type == opening_paren {
-			return true
+		if t.token_type == number {
+			the_stack = append(the_stack, t.val)
+		} else if t.token_type == addition_op {
+			item_one := the_stack[len(the_stack)-1]
+			item_two := the_stack[len(the_stack)-2]
+			the_stack = the_stack[:len(the_stack)-2]
+			the_stack = append(the_stack, item_one+item_two)
+		} else if t.token_type == multiplication_op {
+			item_one := the_stack[len(the_stack)-1]
+			item_two := the_stack[len(the_stack)-2]
+			the_stack = the_stack[:len(the_stack)-2]
+			the_stack = append(the_stack, item_one*item_two)
 		}
 	}
-	return false
+
+	return the_stack[0]
 }
 
 func Run(lines []string) (part1_res string, part2_res string) {
-	// write a maths expression parser that constantly expands paranthesis until there is no more
-	// lets build a token stream
-
 	part1_total := 0
+	part2_total := 0
 	for _, line := range lines {
 		token_stream := []token{}
 		for _, char := range line {
@@ -107,15 +117,12 @@ func Run(lines []string) (part1_res string, part2_res string) {
 			}
 		}
 
-		for token_stream_contains_parentheses(token_stream) {
-			token_stream = perform_single_simplification(token_stream)
-		}
+		part1_total += do_rpn_math(shunting_algo(token_stream, operator_one_has_higher_or_equal_precedence_part_one))
 
-		// should be left with a simple expression
-		expression_result := do_simple_math(token_stream)
-		part1_total += expression_result
+		part2_total += do_rpn_math(shunting_algo(token_stream, operator_one_has_higher_or_equal_precedence_part_two))
 	}
 
 	part1_res = fmt.Sprintf("%d", part1_total)
+	part2_res = fmt.Sprintf("%d", part2_total)
 	return part1_res, part2_res
 }
